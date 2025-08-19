@@ -12,18 +12,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Add Kali repo
-        run: |
-          sudo sh -c "echo 'deb https://http.kali.org/kali kali-rolling main non-free contrib' > /etc/apt/sources.list.d/kali.list"
-          wget -q -O - https://archive.kali.org/archive-key.asc | sudo apt-key add -
-          sudo tee /etc/apt/preferences.d/kali.pref >/dev/null <<< "Package: *"
-          sudo tee -a /etc/apt/preferences.d/kali.pref >/dev/null <<< "Pin: release a=kali-rolling"
-          sudo tee -a /etc/apt/preferences.d/kali.pref >/dev/null <<< "Pin-Priority: 50"
+      - name: Install common build deps
+        run: sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config libssl-dev
 
-          sudo apt-get update
-          apt-cache policy
-          sudo apt update
+      - uses: actions/checkout@v4
+      
       - name: setup node
         uses: actions/setup-node@v4
 
