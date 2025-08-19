@@ -52,8 +52,6 @@ jobs:
           	libtool-bin \
           	libplist-dev \
           	libusbmuxd-dev \
-          	libimobiledevice-glue-dev \
-          	libtatsu-dev \
           	libssl-dev \
           	usbmuxd
 
