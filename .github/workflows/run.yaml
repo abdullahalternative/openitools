@@ -43,6 +43,8 @@ jobs:
             libxdo-dev \
             libssl-dev \
             libayatana-appindicator3-dev \
+            libimobiledevice-glue-dev\
+            libtatsu-dev\
             librsvg2-dev
 
       - name: install libimobiledevice
