@@ -9,19 +9,15 @@ jobs:
   publish-tauri:
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
-            args: ''
 
     runs-on: ubuntu-latest
-    container:
-      image: kalilinux/kali-rolling
     steps:
       - uses: actions/checkout@v4
-
+      - name: Add Kali repo
+        run: |
+          sudo sh -c "echo 'deb https://http.kali.org/kali kali-rolling main non-free contrib' > /etc/apt/sources.list.d/kali.list"
+          wget -q -O - https://archive.kali.org/archive-key.asc | sudo apt-key add -
+          sudo apt update
       - name: setup node
         uses: actions/setup-node@v4
 
