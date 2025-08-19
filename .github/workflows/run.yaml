@@ -26,10 +26,16 @@ jobs:
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
 
-      - name: add kali apt source
+      - name: Add Kali repo
         run: |
-          echo "deb http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" | sudo tee /etc/apt/sources.list.d/kali.list
-          sudo apt-get update && sudo apt update
+          # Download Kali archive key
+          curl -fsSL https://archive.kali.org/archive-key.asc | sudo gpg --dearmor -o /usr/share/keyrings/kali-archive-keyring.gpg
+          
+          # Add repo with signed-by
+          echo "deb [signed-by=/usr/share/keyrings/kali-archive-keyring.gpg] http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" \
+            | sudo tee /etc/apt/sources.list.d/kali.list
+          
+          sudo apt-get update
 
       - name: install dependencies
         run: |
