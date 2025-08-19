@@ -15,7 +15,7 @@ jobs:
       image: kalilinux/kali-rolling
     steps:
       - name: Install common build deps
-        run: apt-get update && sudo apt-get install -y curl build-essential pkg-config libssl-dev
+        run: apt-get update && apt-get install -y curl build-essential pkg-config libssl-dev
 
       - uses: actions/checkout@v4
       
