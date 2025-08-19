@@ -16,7 +16,9 @@ jobs:
           - platform: 'ubuntu-22.04' # for Tauri v1 you could replace this with ubuntu-20.04.
             args: ''
 
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    container:
+      image: kalilinux/kali-rolling
     steps:
       - uses: actions/checkout@v4
 
@@ -25,17 +27,6 @@ jobs:
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
-
-      - name: Add Kali repo
-        run: |
-          # Download Kali archive key
-          curl -fsSL https://archive.kali.org/archive-key.asc | sudo gpg --dearmor -o /usr/share/keyrings/kali-archive-keyring.gpg
-          
-          # Add repo with signed-by
-          echo "deb [signed-by=/usr/share/keyrings/kali-archive-keyring.gpg] http://http.kali.org/kali kali-rolling main contrib non-free non-free-firmware" \
-            | sudo tee /etc/apt/sources.list.d/kali.list
-          
-          sudo apt-get update
 
       - name: install dependencies
         run: |
