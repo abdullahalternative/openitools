@@ -15,7 +15,7 @@ jobs:
       image: kalilinux/kali-rolling
     steps:
       - name: Install common build deps
-        run: sudo apt-get update && sudo apt-get install -y curl build-essential pkg-config libssl-dev
+        run: apt-get update && sudo apt-get install -y curl build-essential pkg-config libssl-dev
 
       - uses: actions/checkout@v4
       
@@ -27,9 +27,9 @@ jobs:
 
       - name: install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-          sudo apt install libwebkit2gtk-4.1-dev \
+          apt-get update
+          apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          apt install libwebkit2gtk-4.1-dev \
             build-essential \
             curl \
             wget \
@@ -43,7 +43,7 @@ jobs:
 
       - name: install libimobiledevice
         run: |
-          sudo apt-get install \
+          apt-get install \
           	build-essential \
           	pkg-config \
           	checkinstall \
@@ -60,7 +60,7 @@ jobs:
           cd libimobiledevice
           ./autogen.sh
           make
-          sudo make install
+          make install
           
             
 
