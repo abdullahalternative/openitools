@@ -41,9 +41,15 @@
       "icons/icon.ico"
     ]
   },
-  "tauri": {
+  "bundle": {
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
     "updater": {
-      "active": false
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc0OTRDNEYwNUM4NDE2NzMKUldSekZvUmM4TVNVZEJiRXFsdE9COC9lVUhoUW1iamFYNkZ6Tit5MmJNa2t3Y3RkUmRlQ0FXYm4K",
+      "endpoints": [
+        "https://github.com/abdullahalternative/openitools/releases/latest/download/latest.json"
+      ]
     }
   }
 }
