@@ -31,6 +31,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": ["deb", "msi", "dmg"],
     "icon": [
@@ -40,9 +41,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-  },
-  "bundle": {
-    "createUpdaterArtifacts": true
   },
   "plugins": {
     "updater": {
