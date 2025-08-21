@@ -50,7 +50,13 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           shared-key: 'openitools'
-
+      - name: Install winget
+        if: runner.os == 'Windows'
+        uses: Cyberboss/install-winget@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          wget_release_id: latest
+        
       - name: Install OpenSSL (Windows via winget)
         if: runner.os == 'Windows'
         run: |
@@ -58,10 +64,10 @@ jobs:
           echo "OPENSSL_DIR=C:\\Program Files\\OpenSSL-Win64" >> $env:GITHUB_ENV
           echo "$env:PATH += ';C:\\Program Files\\OpenSSL-Win64\\bin'" >> $env:GITHUB_ENV
       
-      - name: Install OpenSSL (macOS)
+      - name: Install dependenicesL (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install openssl@3
+          brew install openssl@3 libimobiledevice libplist usbmuxd
           echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
 
       - name: install dependencies
