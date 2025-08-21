@@ -19,8 +19,6 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             args: ''
-          #- platform: 'ubuntu-22.04-arm' # Only available in public repos.
-           # args: ''
           - platform: 'windows-latest'
             args: ''
             
@@ -28,7 +26,7 @@ jobs:
     container:
       image: kalilinux/kali-rolling
       options: --user root
-    if: ${{ matrix.os }} == 'ubuntu-22.04'
+    if: ${{ matrix.os  == 'ubuntu-22.04' }}
 
     steps:
       - name: Install common build deps
