@@ -28,7 +28,7 @@ jobs:
     container:
       image: kalilinux/kali-rolling
       options: --user root
-    if: matrix.os == 'ubuntu-22.04'
+    if: ${{ matrix.os }} == 'ubuntu-22.04'
 
     steps:
       - name: Install common build deps
