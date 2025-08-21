@@ -54,15 +54,32 @@ jobs:
       - name: Install OpenSSL (Windows via winget)
         if: runner.os == 'Windows'
         run: |
-          winget install ShiningLight.OpenSSL.Light -e --silent --accept-source-agreements --accept-package-agreements
+          winget install ShiningLight.OpenSSL -e --silent --accept-source-agreements --accept-package-agreements
           echo "OPENSSL_DIR=C:\\Program Files\\OpenSSL-Win64" >> $env:GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=C:\\Program Files\\OpenSSL-Win64\\lib" >> $env:GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=C:\\Program Files\\OpenSSL-Win64\\include" >> $env:GITHUB_ENV
           echo "$env:PATH += ';C:\\Program Files\\OpenSSL-Win64\\bin'" >> $env:GITHUB_ENV
-      
+          
       - name: Install dependenicesL (macOS)
         if: runner.os == 'macOS'
         run: |
           brew install openssl@3 libimobiledevice libplist usbmuxd
-          echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
+          OPENSSL_DIR=$(brew --prefix openssl@3)
+      
+          # Export full paths for cargo/openssl-sys
+          echo "OPENSSL_DIR=$OPENSSL_DIR" >> $GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=$OPENSSL_DIR/lib" >> $GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include" >> $GITHUB_ENV
+          echo "$OPENSSL_DIR/bin" >> $GITHUB_PATH
+      
+          # Handle Intel vs M1 runners explicitly
+          if [[ "$(uname -m)" == "x86_64" ]]; then
+            echo "CFLAGS=-arch x86_64" >> $GITHUB_ENV
+            echo "CXXFLAGS=-arch x86_64" >> $GITHUB_ENV
+          else
+            echo "CFLAGS=-arch arm64" >> $GITHUB_ENV
+            echo "CXXFLAGS=-arch arm64" >> $GITHUB_ENV
+          fi
 
       - name: install dependencies
         if: runner.os == 'Linux'
