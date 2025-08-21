@@ -62,20 +62,45 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg C:\vcpkg || echo "already cloned"
           C:\vcpkg\bootstrap-vcpkg.bat
-          C:\vcpkg\vcpkg install openssl:x64-windows-static
-          C:\vcpkg\vcpkg install libimobiledevice:x64-windows
+          # C:\vcpkg\vcpkg install openssl:x64-windows-static
+          # C:\vcpkg\vcpkg install libimobiledevice:x64-windows
+          C:\vcpkg\vcpkg install libplist:x64-windows
           
-          echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows-static" >> $env:GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=C:\vcpkg\installed\x64-windows-static\lib" >> $env:GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=C:\vcpkg\installed\x64-windows-static\include" >> $env:GITHUB_ENV
+          # echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows-static" >> $env:GITHUB_ENV
+          # echo "OPENSSL_LIB_DIR=C:\vcpkg\installed\x64-windows-static\lib" >> $env:GITHUB_ENV
+          # echo "OPENSSL_INCLUDE_DIR=C:\vcpkg\installed\x64-windows-static\include" >> $env:GITHUB_ENV
           
           
           # Ensure DLLs can be found at runtime
-          echo "C:\vcpkg\installed\x64-windows\bin" >> $env:GITHUB_PATH
+          # echo "C:\vcpkg\installed\x64-windows\bin" >> $env:GITHUB_PATH
           
-          echo "C:\vcpkg\installed\x64-windows-static\bin" >> $env:GITHUB_PATH
+          # echo "C:\vcpkg\installed\x64-windows-static\bin" >> $env:GITHUB_PATH
           
-          echo "CARGO_FEATURE_VENDORED=1" >> $env:GITHUB_ENV
+          # echo "CARGO_FEATURE_VENDORED=1" >> $env:GITHUB_ENV
+          - name: Install MSYS2 + autotools
+
+          choco install msys2 -y
+          refreshenv
+          
+          # Update MSYS2 package database and core system packages
+          C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm"
+
+          # Install build essentials + autotools explicitly
+          C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm base-devel autoconf automake libtool mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config"
+
+          # Add MSYS2 / MinGW paths globally to PATH
+          echo "C:\\msys64\\usr\\bin" >> $env:GITHUB_PATH
+          echo "C:\\msys64\\mingw64\\bin" >> $env:GITHUB_PATH
+
+          # Optional: confirm tools are available
+          sh --version
+          autoconf --version
+          automake --version
+          libtool --version
+          gcc --version
+          make --version
+          pkg-config --version
+
 
           
       - name: Install dependenicesL (macOS)
