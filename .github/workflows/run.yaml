@@ -54,11 +54,12 @@ jobs:
       - name: Install OpenSSL (Windows via winget)
         if: runner.os == 'Windows'
         run: |
-          choco install openssl --no-progress -y
-          echo "OPENSSL_DIR=C:\\Program Files\\OpenSSL-Win64" >> $env:GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=C:\\Program Files\\OpenSSL-Win64\\lib" >> $env:GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=C:\\Program Files\\OpenSSL-Win64\\include" >> $env:GITHUB_ENV
-          echo "C:\\Program Files\\OpenSSL-Win64\\bin" >> $env:GITHUB_PATH
+          git clone https://github.com/microsoft/vcpkg C:\vcpkg
+          C:\vcpkg\bootstrap-vcpkg.bat
+          C:\vcpkg\vcpkg install openssl:x64-windows
+          echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows" >> $env:GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=C:\vcpkg\installed\x64-windows\lib" >> $env:GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=C:\vcpkg\installed\x64-windows\include" >> $env:GITHUB_ENV
           
       - name: Install dependenicesL (macOS)
         if: runner.os == 'macOS'
