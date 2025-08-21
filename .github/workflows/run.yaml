@@ -67,6 +67,14 @@ jobs:
           # Add MSYS2 / MinGW paths globally to PATH
           echo "C:\\msys64\\usr\\bin" >> $env:GITHUB_PATH
           echo "C:\\msys64\\mingw64\\bin" >> $env:GITHUB_PATH
+          
+      - name: Install Strawberry Perl
+        if: runner.os == 'Windows'
+        run: choco install strawberryperl --no-progress -y
+      
+      - name: Add Strawberry Perl to PATH
+        if: runner.os == 'Windows'
+        run: echo "C:\Strawberry\perl\bin" >> $env:GITHUB_PATH
 
           
       - name: Install dependenicesL (macOS)
