@@ -18,15 +18,15 @@ jobs:
           - platform: 'macos-latest' # for Intel based macs.
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
+            container: kalilinux/kali-rolling
             args: ''
           - platform: 'windows-latest'
             args: ''
             
     runs-on: ${{ matrix.platform }}
-    container:
-      image: kalilinux/kali-rolling
-      options: --user root
-    if: ${{ matrix.platform  == 'ubuntu-22.04' }}
+    
+    container: ${{ matrix.container }}
+  
 
     steps:
       - name: Install common build deps
