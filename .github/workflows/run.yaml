@@ -51,21 +51,32 @@ jobs:
         with:
           shared-key: 'openitools'
         
-      - name: Install OpenSSL (Windows via winget)
+      - name: Cache vcpkg
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: C:/vcpkg/installed
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('**/vcpkg.json') }}
+      - name: Install OpenSSL + libimobiledevice
         if: runner.os == 'Windows'
         run: |
-          git clone https://github.com/microsoft/vcpkg C:\vcpkg
+          git clone https://github.com/microsoft/vcpkg C:\vcpkg || echo "already cloned"
           C:\vcpkg\bootstrap-vcpkg.bat
+          C:\vcpkg\vcpkg install openssl:x64-windows-static
+          C:\vcpkg\vcpkg install libimobiledevice:x64-windows
           
-          C:\vcpkg\vcpkg install openssl:x64-windows
-          echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows" >> $env:GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=C:\vcpkg\installed\x64-windows\lib" >> $env:GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=C:\vcpkg\installed\x64-windows\include" >> $env:GITHUB_ENV
+          echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows-static" >> $env:GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=C:\vcpkg\installed\x64-windows-static\lib" >> $env:GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=C:\vcpkg\installed\x64-windows-static\include" >> $env:GITHUB_ENV
           
-          C:\vcpkg\vcpkg install libimobiledevice:x64-windows 
-
+          
           # Ensure DLLs can be found at runtime
           echo "C:\vcpkg\installed\x64-windows\bin" >> $env:GITHUB_PATH
+          
+          echo "C:\vcpkg\installed\x64-windows-static\bin" >> $env:GITHUB_PATH
+          
+          echo "CARGO_FEATURE_VENDORED=1" >> $env:GITHUB_ENV
+
           
       - name: Install dependenicesL (macOS)
         if: runner.os == 'macOS'
