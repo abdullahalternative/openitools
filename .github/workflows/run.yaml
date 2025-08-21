@@ -60,8 +60,8 @@ jobs:
       - name: Install OpenSSL + libimobiledevice
         if: runner.os == 'Windows'
         run: |
-          git clone https://github.com/microsoft/vcpkg C:\vcpkg || echo "already cloned"
-          C:\vcpkg\bootstrap-vcpkg.bat
+          # git clone https://github.com/microsoft/vcpkg C:\vcpkg || echo "already cloned"
+          # C:\vcpkg\bootstrap-vcpkg.bat
           # C:\vcpkg\vcpkg install openssl:x64-windows-static
           # C:\vcpkg\vcpkg install libimobiledevice:x64-windows
           C:\vcpkg\vcpkg install libplist:x64-windows
@@ -77,7 +77,6 @@ jobs:
           # echo "C:\vcpkg\installed\x64-windows-static\bin" >> $env:GITHUB_PATH
           
           # echo "CARGO_FEATURE_VENDORED=1" >> $env:GITHUB_ENV
-          - name: Install MSYS2 + autotools
 
           choco install msys2 -y
           refreshenv
