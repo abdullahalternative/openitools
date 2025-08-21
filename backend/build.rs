@@ -10,7 +10,7 @@ fn main() {
 
     for lib in libs {
         if let Err(e) = pkg_config::probe_library(lib) {
-            panic!("Missing system library: `{lib}` not found. Error: {e}");
+            eprintln!("Missing system library: `{lib}` not found. Error: {e}");
         }
     }
     tauri_build::build();
