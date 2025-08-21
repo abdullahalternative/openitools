@@ -54,7 +54,7 @@ jobs:
       - name: Install OpenSSL (Windows via winget)
         if: runner.os == 'Windows'
         run: |
-          winget install ShiningLight.OpenSSL.Light -e --silent
+          winget install ShiningLight.OpenSSL.Light -e --silent --accept-source-agreements --accept-package-agreements
           echo "OPENSSL_DIR=C:\\Program Files\\OpenSSL-Win64" >> $env:GITHUB_ENV
           echo "$env:PATH += ';C:\\Program Files\\OpenSSL-Win64\\bin'" >> $env:GITHUB_ENV
       
