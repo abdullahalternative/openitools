@@ -20,7 +20,7 @@ jobs:
           - platform: 'ubuntu-22.04'
             container: kalilinux/kali-rolling
             args: ''
-          - platform: 'windows-latest'
+          - platform: 'windows-2025'
             args: ''
             
     runs-on: ${{ matrix.platform }}
