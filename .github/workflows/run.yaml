@@ -51,6 +51,19 @@ jobs:
         with:
           shared-key: 'openitools'
 
+      - name: Install OpenSSL (Windows via winget)
+        if: runner.os == 'Windows'
+        run: |
+          winget install ShiningLight.OpenSSL.Light -e --silent
+          echo "OPENSSL_DIR=C:\\Program Files\\OpenSSL-Win64" >> $env:GITHUB_ENV
+          echo "$env:PATH += ';C:\\Program Files\\OpenSSL-Win64\\bin'" >> $env:GITHUB_ENV
+      
+      - name: Install OpenSSL (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install openssl@3
+          echo "OPENSSL_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
+
       - name: install dependencies
         if: runner.os == 'Linux'
         run: |
