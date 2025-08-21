@@ -68,16 +68,6 @@ jobs:
           echo "C:\\msys64\\usr\\bin" >> $env:GITHUB_PATH
           echo "C:\\msys64\\mingw64\\bin" >> $env:GITHUB_PATH
 
-          # Optional: confirm tools are available
-          sh --version
-          autoconf --version
-          automake --version
-          libtool --version
-          gcc --version
-          make --version
-          pkg-config --version
-
-
           
       - name: Install dependenicesL (macOS)
         if: runner.os == 'macOS'
