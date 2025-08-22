@@ -38,7 +38,6 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           choco install openssl cygwin -y
-          refreshenvs
 
           
       - name: Install dependenicesL (macOS)
