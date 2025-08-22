@@ -34,10 +34,10 @@ jobs:
         run: apt-get update && apt-get install -y curl build-essential pkg-config libssl-dev
 
           
-      - name: Install OpenSSL + libimobiledevice
-        if: runner.os == 'Windows'
-        run: |
-          choco install openssl cygwin -y
+      #- name: Install OpenSSL + libimobiledevice
+      #  if: runner.os == 'Windows'
+      #  run: |
+      #    choco install openssl cygwin -y
 
           
       - name: Install dependenicesL (macOS)
