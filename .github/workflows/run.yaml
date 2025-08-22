@@ -20,7 +20,7 @@ jobs:
           #- platform: 'ubuntu-22.04'
           #  container: kalilinux/kali-rolling
           #  args: ''
-          - platform: 'windows-2025'
+          - platform: 'windows-latest'
             args: ''
             
     runs-on: ${{ matrix.platform }}
@@ -33,48 +33,12 @@ jobs:
         if: runner.os == 'Linux'
         run: apt-get update && apt-get install -y curl build-essential pkg-config libssl-dev
 
-      - uses: actions/checkout@v4
-      
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          # cache: 'pnpm'
           
-
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-        
-      - uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: 'openitools'
-        
-
       - name: Install OpenSSL + libimobiledevice
         if: runner.os == 'Windows'
         run: |
-          choco install msys2 -y
-          refreshenv
-          
-          # Update MSYS2 package database and core system packages
-          C:\msys64\usr\bin\bash.exe -lc "pacman -Syuu --noconfirm"
-
-          # Install build essentials + autotools explicitly
-          C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm base-devel autoconf automake libtool mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config"
-
-          # Add MSYS2 / MinGW paths globally to PATH
-          echo "C:\\msys64\\usr\\bin" >> $env:GITHUB_PATH
-          echo "C:\\msys64\\mingw64\\bin" >> $env:GITHUB_PATH
-          
-      - name: Install Strawberry Perl
-        if: runner.os == 'Windows'
-        run: choco install strawberryperl --no-progress -y
-      
-      - name: Add Strawberry Perl to PATH
-        if: runner.os == 'Windows'
-        run: echo "C:\Strawberry\perl\bin" >> $env:GITHUB_PATH
+          choco install openssl cygwin -y
+          refreshenvs
 
           
       - name: Install dependenicesL (macOS)
@@ -126,7 +90,15 @@ jobs:
           ./autogen.sh
           make
           make install
+          
+      - uses: actions/checkout@v4
 
+    
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          # cache: 'pnpm'
 
       - name: install frontend dependencies
         run: |
@@ -134,8 +106,16 @@ jobs:
           npm install -g pnpm
           pnpm install
           cd ..
-
           
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+        
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: 'openitools'          
 
       - uses: tauri-apps/tauri-action@v0
         continue-on-error: true
