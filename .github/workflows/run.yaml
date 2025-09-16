@@ -54,9 +54,9 @@ jobs:
       - name: install dependencies
         if: runner.os == 'Linux'
         run: |
-          apt-get update
-          apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-          apt install -y libwebkit2gtk-4.1-dev \
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          sudo apt install -y libwebkit2gtk-4.1-dev \
             build-essential \
             curl \
             wget \
@@ -117,7 +117,6 @@ jobs:
           shared-key: 'openitools'          
 
       - uses: tauri-apps/tauri-action@v0
-        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
