@@ -1,9 +1,7 @@
-name: 'publish'
+name: "Build and Release"
 
 on:
   workflow_dispatch:
-
-# This workflow will trigger on each push to the `release` branch to create or update a GitHub release, build your app, and upload the artifacts to the release.
 
 jobs:
   publish-tauri:
@@ -13,117 +11,82 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
-            args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
-            args: '--target x86_64-apple-darwin'
-          - platform: 'ubuntu-22.04'
-           # container: kalilinux/kali-rolling
-            args: ''
-          - platform: 'windows-latest'
-            args: ''
-            
+          - platform: "macos-latest"
+            args: "--target aarch64-apple-darwin"
+          - platform: "macos-latest"
+            args: "--target x86_64-apple-darwin"
+          - platform: "ubuntu-22.04"
+            args: ""
+          - platform: "windows-latest"
+            args: ""
+
     runs-on: ${{ matrix.platform }}
-    
-    #container: ${{ matrix.container }}
-  
 
     steps:
-     # - name: Install common build deps
-     #   if: runner.os == 'Linux'
-     #   run: apt-get update && apt-get install -y curl build-essential pkg-config libssl-dev
-
-          
-      #- name: Install OpenSSL + libimobiledevice
-      #  if: runner.os == 'Windows'
-      #  run: |
-      #    choco install openssl cygwin -y
-
-          
-      #- name: Install dependenicesL (macOS)
-      #  if: runner.os == 'macOS'
-      #  run: |
-      #    brew install openssl@3 libimobiledevice libplist usbmuxd
-      #    OPENSSL_DIR=$(brew --prefix openssl@3)
-     # 
-     #     echo "OPENSSL_DIR=$OPENSSL_DIR" >> $GITHUB_ENV
-     #     echo "OPENSSL_LIB_DIR=$OPENSSL_DIR/lib" >> $GITHUB_ENV
-     #     echo "OPENSSL_INCLUDE_DIR=$OPENSSL_DIR/include" >> $GITHUB_ENV
-     #     echo "$OPENSSL_DIR/bin" >> $GITHUB_PATH
-
-      - name: install dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-          sudo apt install -y libwebkit2gtk-4.1-dev \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libxdo-dev \
-            libssl-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev
-
-      # - name: install libimobiledevice
-      #   if: runner.os == 'Linux'
-      #   run: |
-      #     apt-get -y install \
-      #     	build-essential \
-      #     	pkg-config \
-      #     	checkinstall \
-      #     	git \
-      #     	autoconf \
-      #     	automake \
-      #     	libtool-bin \
-      #     	libplist-dev \
-      #     	libusbmuxd-dev \
-      #     	libssl-dev \
-      #     	usbmuxd
-
-      #     git clone https://github.com/libimobiledevice/libimobiledevice.git
-      #     cd libimobiledevice
-      #     ./autogen.sh
-      #     make
-      #     make install
-          
       - uses: actions/checkout@v4
 
-    
-      - name: setup node
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          # cache: 'pnpm'
 
-      - name: install frontend dependencies
+      - name: Install frontend dependencies
         run: |
           cd frontend
           npm install -g pnpm
           pnpm install
           cd ..
-          
-      - name: install Rust stable
+
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-        
 
       - uses: Swatinem/rust-cache@v2
         with:
-          shared-key: 'openitools'          
+          shared-key: "openitools"
 
+      # Get current version from Cargo.toml
+      - name: Get app version
+        id: version
+        run: |
+          VERSION=$(grep '^version' Cargo.toml | head -n1 | awk -F\" '{print $2}')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # Extract latest changelog section dynamically
+      - name: Extract changelog
+        id: changelog
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          awk "/## \\[$VERSION\\]/,/## \\[/" CHANGELOG.md | sed '$d' > RELEASE_BODY.md
+          # Wrap in markdown header
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "## 🚀 OpeniTools v$VERSION" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          cat RELEASE_BODY.md >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "For downloads, see the assets attached below." >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Create GitHub release dynamically
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: "OpeniTools v${{ steps.version.outputs.version }}"
+          body: ${{ steps.changelog.outputs.body }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build Tauri app and attach assets to release
       - uses: kandrelczyk/tauri-action@feature/bundle-types
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          
         with:
-          tagName: OpeniTools-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: 'OpeniTools v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: false
-          prerelease: false
+          releaseId: ${{ steps.create_release.outputs.id }}
           args: ${{ matrix.args }}
