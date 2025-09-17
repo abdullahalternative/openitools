@@ -68,19 +68,6 @@ jobs:
           echo "For downloads, see the assets attached below." >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      # Create GitHub release dynamically
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          release_name: "OpeniTools v${{ steps.version.outputs.version }}"
-          body: ${{ steps.changelog.outputs.body }}
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       # Build Tauri app and attach assets to release
       - uses: kandrelczyk/tauri-action@feature/bundle-types
         env:
@@ -88,5 +75,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          releaseId: ${{ steps.create_release.outputs.id }}
+          tagName: v__VERSION__
+          releaseName: "OpeniTools v__VERSION__"
+          releaseBody: ${{ steps.changelog.outputs.body }}
+          releaseDraft: false
+          prerelease: false
           args: ${{ matrix.args }}
+
