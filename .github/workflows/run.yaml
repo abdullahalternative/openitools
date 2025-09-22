@@ -12,7 +12,7 @@ jobs:
       matrix:
         include:
           
-          - platform: "ubuntu-22.04"
+          - platform: "macos-11"
             args: ""
     
 
